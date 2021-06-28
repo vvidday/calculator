@@ -4,6 +4,7 @@ let current = "";
 let pendingoperator = null;
 let listening = false;
 let finished = false;
+let activelistener = false;
 const display = document.getElementById("display-text");
 
 function add(x, y){
@@ -24,7 +25,13 @@ function divide(x, y){
 }
 
 function operate(fn, x, y){
-    let answer = fn(parseFloat(x), parseFloat(y));
+    let answer = fn(parseFloat(x), parseFloat(y)).toString();
+    if(answer.length > 12){
+        if(!answer.includes(".")) return "Too Large Number!";
+        let tmp = answer.split(".");
+        let decimalPlaces = 12 - tmp[0].length - 1;
+        return (Math.round(parseFloat(answer)*Math.pow(10, decimalPlaces))/Math.pow(10, decimalPlaces)).toString();
+    }
     return answer.toString();
 }
 
@@ -38,6 +45,7 @@ document.getElementById("clear-button").onclick = () => {
     listening = false;
     pendingoperator = null;
     finished = false;
+    if(!activelistener) toggleDec();
     updateDisplay();
 }
 
@@ -46,7 +54,8 @@ const numberButtons = document.querySelectorAll(".num");
 numberButtons.forEach((button)=>{
     let content = button.textContent;
     button.addEventListener("click", (e)=>{
-        if(finished){
+        if(payload.length > 12) return;
+        else if(finished){
             current = "";
             payload = content;
             updateDisplay();
@@ -68,9 +77,42 @@ numberButtons.forEach((button)=>{
             payload = content;
             updateDisplay();
             listening = false;
+            if(!activelistener) toggleDec();
         }
     })
 })
+
+const decButton = document.getElementById("button-decimal");
+function dec(e){
+    if(finished){
+        current = "";
+        payload = "0.";
+        updateDisplay();
+        finshed = false;
+    }
+    else if(!listening){
+        payload += ".";
+        updateDisplay();
+    }
+    else{
+        payload = "0.";
+        updateDisplay();
+        listening = false;
+    }
+    toggleDec();
+}
+
+function toggleDec(){
+    if (!activelistener){
+        decButton.addEventListener("click", dec);
+        activelistener = true;
+    }
+    else{
+        decButton.removeEventListener("click", dec);
+        activelistener = false;
+    }
+}
+
 
 const opButtons = document.querySelectorAll(".op");
 opButtons.forEach((button)=>{
@@ -110,6 +152,7 @@ opButtons.forEach((button)=>{
                 listening = true;
             }
         }
+        if(!activelistener) toggleDec();
     })
 })
 
@@ -126,5 +169,8 @@ equalButton.addEventListener("click", (e)=>{
             finished = true;
             pendingoperator = null;
         }
+        if(!activelistener) toggleDec();
     }
 })
+
+toggleDec();
