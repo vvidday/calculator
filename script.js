@@ -4,7 +4,7 @@ let current = "";
 let pendingoperator = null;
 let listening = false;
 let finished = false;
-const display = document.getElementById("display");
+const display = document.getElementById("display-text");
 
 function add(x, y){
     return x + y;
@@ -24,7 +24,7 @@ function divide(x, y){
 }
 
 function operate(fn, x, y){
-    let answer = fn(parseInt(x), parseInt(y));
+    let answer = fn(parseFloat(x), parseFloat(y));
     return answer.toString();
 }
 
