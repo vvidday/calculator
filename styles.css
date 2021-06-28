@@ -1,0 +1,31 @@
+:root {
+  font-size: 10px;
+  font-family: "Trebuchet MS", sans-serif;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+#container {
+  width: 50%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+#button-grid {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+
+.button {
+  margin: 2rem;
+  display: flex;
+  justify-content: center;
+  width: 20%;
+}
