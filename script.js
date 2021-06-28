@@ -52,9 +52,18 @@ document.getElementById("clear-button").onclick = () => {
 
 const numberButtons = document.querySelectorAll(".num");
 numberButtons.forEach((button)=>{
-    let content = button.textContent;
-    button.addEventListener("click", (e)=>{
-        if(payload.length > 12) return;
+    button.addEventListener("click", ()=> numberPress(button.textContent));
+    window.addEventListener("keydown", (key)=>{
+        if(key.key == button.textContent){
+            numberPress(button.textContent);
+            button.classList.add("highlighted");
+            setTimeout(()=>button.classList.remove("highlighted"), 100);
+        }
+    })
+})
+
+function numberPress(content){
+    if(payload.length > 12) return;
         else if(finished){
             current = "";
             payload = content;
@@ -79,8 +88,8 @@ numberButtons.forEach((button)=>{
             listening = false;
             if(!activelistener) toggleDec();
         }
-    })
-})
+}
+
 
 const decButton = document.getElementById("button-decimal");
 function dec(e){
@@ -102,16 +111,29 @@ function dec(e){
     toggleDec();
 }
 
+
+function keydec(key){
+    if(key.key == "."){ 
+        dec();
+        decButton.classList.add("highlighted");
+        setTimeout(()=>decButton.classList.remove("highlighted"), 100);
+    };
+}
+
 function toggleDec(){
     if (!activelistener){
         decButton.addEventListener("click", dec);
+        window.addEventListener("keydown", keydec);
         activelistener = true;
     }
     else{
         decButton.removeEventListener("click", dec);
+        window.removeEventListener("keydown", keydec);
         activelistener = false;
     }
 }
+
+
 
 
 const opButtons = document.querySelectorAll(".op");

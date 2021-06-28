@@ -83,6 +83,7 @@ body {
   border: transparent;
   border-right: 1px solid;
   border-bottom: 1px solid;
+  -webkit-transition-duration: 0.2s;
 }
 
 .button:last-child {
@@ -139,5 +140,9 @@ body {
 
 button:hover {
   cursor: pointer;
+  background-color: rgba(236, 235, 235, 0.85);
+}
+
+.highlighted {
   background-color: rgba(236, 235, 235, 0.85);
 }
