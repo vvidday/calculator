@@ -39,7 +39,22 @@ function updateDisplay(){
     display.textContent = payload;
 }
 
-document.getElementById("clear-button").onclick = () => {
+function toggleAnim(b){
+    b.classList.add("highlighted");
+    setTimeout(()=> b.classList.remove("highlighted"),100);
+}
+
+
+const clearButton = document.getElementById("clear-button");
+clearButton.onclick = clear;
+window.addEventListener("keydown", (key)=>{
+    if(key.key == "Escape"){
+        clear();
+        toggleAnim(clearButton);
+    }
+})
+
+function clear(){
     payload = '0';
     current = "";
     listening = false;
@@ -56,19 +71,20 @@ numberButtons.forEach((button)=>{
     window.addEventListener("keydown", (key)=>{
         if(key.key == button.textContent){
             numberPress(button.textContent);
-            button.classList.add("highlighted");
-            setTimeout(()=>button.classList.remove("highlighted"), 100);
+            toggleAnim(button);
         }
     })
 })
 
 function numberPress(content){
-    if(payload.length > 12) return;
+    if(payload.length > 12){ return;
+    }
         else if(finished){
             current = "";
             payload = content;
             updateDisplay();
-            finshed = false;
+            finished = false;
+
         }
         else if(!listening){
             if(content == 0){
@@ -77,7 +93,7 @@ function numberPress(content){
                 }
             }
             else{
-                if(payload == '0') payload = "";
+                if(payload === '0') payload = "";
                 payload += content;
             }
             updateDisplay();
@@ -97,7 +113,7 @@ function dec(e){
         current = "";
         payload = "0.";
         updateDisplay();
-        finshed = false;
+        finished = false;
     }
     else if(!listening){
         payload += ".";
@@ -115,8 +131,7 @@ function dec(e){
 function keydec(key){
     if(key.key == "."){ 
         dec();
-        decButton.classList.add("highlighted");
-        setTimeout(()=>decButton.classList.remove("highlighted"), 100);
+        toggleAnim(decButton);
     };
 }
 
@@ -153,8 +168,35 @@ opButtons.forEach((button)=>{
         case "minus":
             f = subtract;
     }
-    button.addEventListener("click", (e)=>{
-        finished = false;
+    button.addEventListener("click", (button)=> opEval(f));
+})
+
+
+
+window.addEventListener("keydown", (key)=>{
+    switch(key.key){
+        case "+":
+            opEval(add);
+            toggleAnim(opButtons[3]);
+            break;
+        case "-":
+            opEval(subtract);
+            toggleAnim(opButtons[2]);
+            break;
+        case "*":
+            opEval(multiply);
+            toggleAnim(opButtons[1]);
+            break;
+        case "/":
+            opEval(divide);
+            toggleAnim(opButtons[0]);
+            break;
+    }
+})
+
+
+function opEval(f){
+    finished = false;
         if(!pendingoperator){
             pendingoperator = f;
             listening = true;
@@ -175,11 +217,20 @@ opButtons.forEach((button)=>{
             }
         }
         if(!activelistener) toggleDec();
-    })
-})
+}
+
 
 const equalButton = document.getElementById("button-eq");
-equalButton.addEventListener("click", (e)=>{
+equalButton.addEventListener("click", equaleval);
+window.addEventListener("keydown", (key)=>{
+    if (key.key == "Enter"){
+        equaleval();
+        toggleAnim(equalButton);
+    }
+})
+
+
+function equaleval(){
     if(current && pendingoperator){
         payload = operate(pendingoperator, current, payload);
         if(payload == "ERROR"){
@@ -193,6 +244,23 @@ equalButton.addEventListener("click", (e)=>{
         }
         if(!activelistener) toggleDec();
     }
+}
+
+const delButton = document.getElementById("del-button");
+delButton.onclick = del;
+window.addEventListener("keydown", (key)=>{
+    if(key.key == "Backspace" || key.key == "Delete"){
+        del();
+        toggleAnim(delButton);
+    }
 })
+
+function del(){
+    if(payload === '0') return;
+    if(payload.length == 1) payload = '0';
+    else payload = payload.slice(0, payload.length - 1);
+    updateDisplay();
+}
+
 
 toggleDec();
